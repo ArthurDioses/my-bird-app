@@ -11,8 +11,12 @@ import kotlinx.coroutines.launch
 import model.BirdImage
 
 data class BirdsUiState(
-    val image: List<BirdImage> = emptyList()
-)
+    val image: List<BirdImage> = emptyList(),
+    val selectedCategory: String? = null
+) {
+    val categories = image.map { it.category }.toSet()
+    val selectedImages = image.filter { it.category == selectedCategory }
+}
 
 class BirdsViewModel : ViewModel() {
     private val httpClient = HttpClient {
@@ -27,6 +31,12 @@ class BirdsViewModel : ViewModel() {
 
     override fun onCleared() {
         httpClient.close()
+    }
+
+    fun selectCategory(category: String) {
+        _uiState.update {
+            it.copy(selectedCategory = category)
+        }
     }
 
     fun updateImages() {
